@@ -22,6 +22,16 @@ module.exports = {
           key: 'id',
         },
       },
+       userID: {
+        type: Sequelize.INTEGER,
+          references: {
+          model: {
+            tableName: 'Users',
+            schema: 'public',
+          },
+          key: 'id',
+        },
+      },
       categoryID: {
         type: Sequelize.INTEGER,
           references: {
