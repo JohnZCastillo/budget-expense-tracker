@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.User, {
         foreignKey: { name: 'userID', },
       })
+
+       this.hasMany(models.BudgetDetail, {
+        foreignKey: { name: 'budgetID', },
+      })
     }
   }
   Budget.init({

@@ -14,7 +14,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   BudgetVisibility.init({
-    coverage: DataTypes.DATE,
+    id:{
+      type:  DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    coverage: DataTypes.DATEONLY,
     budgetID: DataTypes.INTEGER,
     categoryID: DataTypes.INTEGER
   }, {

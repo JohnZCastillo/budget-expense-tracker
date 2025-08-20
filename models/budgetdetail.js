@@ -14,9 +14,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   BudgetDetail.init({
+     id:{
+      type:  DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     amount: DataTypes.FLOAT,
     budgetID: DataTypes.INTEGER,
-    coverage: DataTypes.DATE,
+    coverage: DataTypes.DATEONLY,
     init: DataTypes.BOOLEAN,
     deleted: DataTypes.DATE
   }, {

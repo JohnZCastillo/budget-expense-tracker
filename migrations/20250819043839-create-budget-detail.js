@@ -33,7 +33,7 @@ module.exports = {
         },
       },
       coverage: {
-        type: Sequelize.DATE
+        type: Sequelize.DATEONLY
       },
       init: {
         type: Sequelize.BOOLEAN
@@ -50,6 +50,12 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
+
+    await queryInterface.addConstraint('BudgetDetails', {
+      type: 'UNIQUE',
+      fields: ['budgetID', 'coverage', 'init'],
+      name: 'unique_budget_details',
+    })
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('BudgetDetails');

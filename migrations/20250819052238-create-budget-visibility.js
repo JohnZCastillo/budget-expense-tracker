@@ -10,7 +10,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       coverage: {
-        type: Sequelize.DATE
+        type: Sequelize.DATEONLY
       },
       budgetID: {
         type: Sequelize.INTEGER,

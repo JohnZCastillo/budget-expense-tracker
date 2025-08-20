@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     amount: DataTypes.FLOAT,
     budgetDetailID: DataTypes.INTEGER,
     categoryID: DataTypes.INTEGER,
-    coverage: DataTypes.DATE,
+    coverage: DataTypes.DATEONLY,
   }, {
     sequelize,
     modelName: 'Expense',
