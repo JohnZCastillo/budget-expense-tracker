@@ -4,13 +4,17 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 
 const {User} = require('./../models/index');
-const { where } = require('sequelize');
-const { raw } = require('body-parser');
+const UserSchema = require("./../schema/user/userSchema");
+const AuthSchema = require("./../schema/auth/authSchema");
+
+const  {z} =  require('zod');
+
+const ZodErrorParser = require('./../utils/ZodErrorParser');
 
 router.post('/login',async (req,res)=>{
      try{
 
-        const {email, password} = req.body;
+        const {email, password} =  await AuthSchema.parseAsync({ ...req.body}); 
 
         const user = await User.findOne({   
             attributes: ['id','name','email','password'],
@@ -30,25 +34,31 @@ router.post('/login',async (req,res)=>{
             return res.status(401).json({message: "Incorrect email/password"});
         }
 
-        console.log('user before deletion: ', user);
         delete user.password;
-
-        console.log('user after deletion: ', user);
 
         const token = jwt.sign(JSON.stringify(user), process.env.JWT_SECRET);
 
-        return res.json({token: token});
+        return res.json({
+            user: user,
+            token: token
+        });
 
      }catch(error){
         global.reportAppError(error);
+
+        if(error instanceof z.ZodError){
+            return res.status(400).json(ZodErrorParser(error));
+        }
+
         return res.status(500).json({message: 'something went wrong while fetching users'});
     }
 })
 
 router.post('/register',async (req,res)=>{
     try{
-        const {name,email,password} = req.body;
 
+        const {name,email,password} = await UserSchema.parseAsync({ ...req.body}); 
+        
         const hashPassword = await bcrypt.hash(password, +process.env.SALT_ROUNDS);
 
         const user = User.build({   
@@ -64,7 +74,13 @@ router.post('/register',async (req,res)=>{
         return res.json(user);
 
     }catch(error){
+
         global.reportAppError(error);
+
+        if(error instanceof z.ZodError){
+            return res.status(400).json(ZodErrorParser(error));
+        }
+        
         return res.status(500).json({message: 'something went wrong while creating new user'});
     }
 })

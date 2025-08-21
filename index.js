@@ -2,10 +2,13 @@ require('dotenv').config();
 const bodyParser = require('body-parser')
 
 const routes = require('./routes/index');
-
+var cors = require('cors')
 const express = require('express')
 const app = express()
 const port = 3000
+
+
+app.use(cors());
 
 global.reportAppError = (error) => {
   if(process.env.NODE_ENV !== 'development'){

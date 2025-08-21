@@ -4,18 +4,24 @@ const router = express.Router()
 const {Budget, BudgetDetail,BudgetVisibility, sequelize} = require('./../models/index');
 const { Op,QueryTypes  } = require('sequelize');
 
+const BudgetSchema = require("./../schema/budget/budgetSchema");
+const  {z} =  require('zod');
+const ZodErrorParser = require('./../utils/ZodErrorParser');
+
+
 router.get('/',async (req,res)=>{
      try{
 
         const {month, categoryID} = req.query;
 
         const result = await sequelize.query(`
-            SELECT b.* FROM "Budgets" b 
+            SELECT b.*, bd.id as budgetdetilsid,bd.amount FROM "Budgets" b 
             LEFT JOIN "BudgetVisibilities" v1 ON 
             b.id = v1."budgetID" AND 
             v1.coverage = $coverage AND v1."categoryID" = $categoryID  
             LEFT JOIN "BudgetVisibilities" v2 ON 
             b.id = v2."budgetID" 
+            LEFT JOIN "BudgetDetails" bd ON bd."budgetID" = v2.id 
             WHERE v1.id IS NOT NULL OR v2.id IS NULL
             `, {
             bind: {
@@ -64,7 +70,7 @@ router.post('/',async (req,res)=>{
     
     try{
 
-        const {title, amount, coverage, visibility} = req.body;
+        const {title, amount, coverage, visibility} = await BudgetSchema.parseAsync({ ...req.body}); 
 
         const budget = Budget.build({   
             title: title,
@@ -73,7 +79,7 @@ router.post('/',async (req,res)=>{
 
         await budget.save();
 
-        if(coverage){
+        if(coverage && coverage.length > 0){
         
             for(const month of coverage){
                 
@@ -97,7 +103,7 @@ router.post('/',async (req,res)=>{
             await budgetDetail.save();
         }
 
-        if(visibility){
+        if(visibility && visibility.length > 0){
         
             for(const visible of visibility){
                 
@@ -129,6 +135,11 @@ router.post('/',async (req,res)=>{
 
      }catch(error){
         global.reportAppError(error);
+
+        if(error instanceof z.ZodError){
+            return res.status(400).json(ZodErrorParser(error));
+        }
+
         return res.status(500).json({message: 'something went wrong while creating new budget'});
     }
 })
