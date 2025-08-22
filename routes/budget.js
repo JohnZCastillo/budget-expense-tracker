@@ -15,18 +15,17 @@ router.get('/',async (req,res)=>{
         const {month, categoryID} = req.query;
 
         const result = await sequelize.query(`
-            SELECT b.*, bd.id as budgetdetilsid,bd.amount FROM "Budgets" b 
-            LEFT JOIN "BudgetVisibilities" v1 ON 
-            b.id = v1."budgetID" AND 
-            v1.coverage = $coverage AND v1."categoryID" = $categoryID  
-            LEFT JOIN "BudgetVisibilities" v2 ON 
-            b.id = v2."budgetID" 
-            LEFT JOIN "BudgetDetails" bd ON bd."budgetID" = v2.id 
-            WHERE v1.id IS NOT NULL OR v2.id IS NULL
+            SELECT b.id, b.title, COALESCE(bd.amount, bd2.amount,0) as amount FROM "Budgets" b 
+            LEFT JOIN "BudgetVisibilities" v1 ON b.id = v1."budgetID" AND v1.coverage = $coverage AND v1."categoryID" = $categoryID AND v1.deleted IS NULL  
+            LEFT JOIN "BudgetVisibilities" v2 ON b.id = v2."budgetID" AND v2.deleted IS NULL  
+            LEFT JOIN "BudgetDetails" bd ON bd."budgetID" = b.id AND bd.coverage = $coverage AND bd."categoryID" = $categoryID AND bd.deleted IS NULL  
+            LEFT JOIN "BudgetDetails" bd2 ON bd2."budgetID" = b.id AND bd2.coverage IS NULL AND bd2.init = true AND bd2.deleted IS NULL   
+            WHERE v1.id IS NOT NULL OR v2.id IS NULL AND (bd.id IS NOT NULL OR bd2.id IS NOT NULL) AND b.deleted IS NULL 
+            ORDER BY b.id
             `, {
             bind: {
-                coverage: month,
-                categoryID: categoryID ?? null
+                coverage: month ?? new Date(),
+                categoryID: categoryID ?? 0,
             },
             type: QueryTypes.SELECT,
             raw: true
@@ -96,8 +95,8 @@ router.post('/',async (req,res)=>{
             const budgetDetail = BudgetDetail.build({
                 amount: amount,
                 budgetID: budget.id,
-                coverage: coverage,
-                init: coverage ? false : true
+                coverage: null,
+                init: true
             })
 
             await budgetDetail.save();

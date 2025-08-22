@@ -22,7 +22,8 @@ module.exports = (sequelize, DataTypes) => {
     coverage: DataTypes.DATEONLY,
     budgetID: DataTypes.INTEGER,
     categoryID: DataTypes.INTEGER,
-    userID: DataTypes.INTEGER
+    userID: DataTypes.INTEGER,
+    deleted: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'BudgetVisibility',
