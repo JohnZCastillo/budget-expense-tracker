@@ -36,6 +36,8 @@ module.exports = {
         type: Sequelize.DATEONLY
       },
       init: {
+        allowNull: false,
+        defaultValue: false,
         type: Sequelize.BOOLEAN
       },
       deleted: {
@@ -51,11 +53,16 @@ module.exports = {
       }
     });
 
-    await queryInterface.addConstraint('BudgetDetails', {
-      type: 'UNIQUE',
-      fields: ['budgetID', 'coverage', 'init'],
-      name: 'unique_budget_details',
-    })
+  await queryInterface.sequelize.query(
+  `ALTER TABLE "BudgetDetails" ADD UNIQUE NULLS NOT DISTINCT ("budgetID", coverage, init)`, {
+    type: queryInterface.sequelize.QueryTypes.RAW
+  });
+
+    // await queryInterface.addConstraint('BudgetDetails', {
+      // type: 'UNIQUE NULLS NOT DISTINCT',
+      // fields: ['budgetID', 'coverage', 'init'],
+      // name: 'unique_budget_details',
+    // })
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('BudgetDetails');
