@@ -8,10 +8,10 @@ const moneyRoutes = require('./../routes/money');
 const express = require('express');
 const router = express.Router();
 
-router.use('/api/budgets', authMiddleware, budgetRoutes);
-router.use('/api/users', authMiddleware, userRoutes);
-router.use('/api/categories', authMiddleware, categoryRoutes);
-router.use('/api/money', authMiddleware, moneyRoutes);
-router.use('/api/auth', authRoutes);
+router.use('/budgets', authMiddleware, budgetRoutes);
+router.use('/users', authMiddleware, userRoutes);
+router.use('/categories', authMiddleware, categoryRoutes);
+router.use('/money', authMiddleware, moneyRoutes);
+router.use('/auth', authRoutes);
 
 module.exports = router;

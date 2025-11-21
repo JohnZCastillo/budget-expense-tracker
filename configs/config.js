@@ -5,6 +5,11 @@ module.exports = {
     "database":  process.env.DB_NAME,
     "host":  process.env.DB_HOST,
     "dialect":  process.env.DB_DIALECT,
-    "port":  process.env.DB_PORT
+    "port":  process.env.DB_PORT,
+     dialectOptions: {
+      ssl : {rejectUnauthorized: false},
+      useUTC: false, // for reading from database
+    },
+    timezone: '+08:00'
   },
 }
