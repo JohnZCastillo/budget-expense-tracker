@@ -4,6 +4,7 @@ const userRoutes = require('./../routes/user');
 const authRoutes = require('./../routes/auth');
 const categoryRoutes = require('./../routes/category');
 const moneyRoutes = require('./../routes/money');
+const expenseRoutes = require('./../routes/expense');
 
 const express = require('express');
 const router = express.Router();
@@ -13,5 +14,7 @@ router.use('/users', authMiddleware, userRoutes);
 router.use('/categories', authMiddleware, categoryRoutes);
 router.use('/money', authMiddleware, moneyRoutes);
 router.use('/auth', authRoutes);
+router.use('/expenses', expenseRoutes);
+
 
 module.exports = router;
